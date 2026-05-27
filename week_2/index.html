@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --panel-bg: #ffffff;
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --danger-color: #ef4444;
+            --danger-hover: #dc2626;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Dashboard Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        .card {
+            background: var(--panel-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            height: fit-content;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--bg-color);
+        }
+
+        /* Form styling */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.95rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 0.7rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Table & List Styling */
+        .inventory-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .item-row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .item-info h3 {
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        .item-info p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .item-meta {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-top: 0.4rem;
+        }
+
+        .btn-delete {
+            background-color: transparent;
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-delete:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Inventory Dashboard</h1>
+        <p>Live Management System Connected via PHP API</p>
+    </header>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <h2>Add New Stock Item</h2>
+            <form id="inventoryForm">
+                <div class="form-group">
+                    <label for="userId">User ID</label>
+                    <input type="number" id="userId" class="form-control" value="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemName">Item Name</label>
+                    <input type="text" id="itemName" class="form-control" placeholder="e.g. Bread, Milk" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description / Brand</label>
+                    <input type="text" id="description" class="form-control" placeholder="e.g. Whole wheat, Brookside" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">Admin Password (Required)</label>
+                    <input type="password" id="adminPassword" class="form-control" placeholder="Enter password to authorize" required>
+                    <div id="passwordStrength" style="font-size: 0.8rem; margin-top: 0.4rem; font-weight: 600;"></div>
+                </div>
+                <button type="submit" class="btn">Add to Database</button>
+            </form>
+        </div>
+
+        <div>
+            <div class="card" style="box-shadow: none; background: transparent; border: none; padding: 0;">
+                <h2>Current Stock Items</h2>
+                <div id="inventoryContainer" class="inventory-list">
+                    <p class="empty-state">Loading stock items...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'index.php';
+
+    // UI Elements
+    const inventoryForm = document.getElementById('inventoryForm');
+    const inventoryContainer = document.getElementById('inventoryContainer');
+    const passwordInput = document.getElementById('adminPassword');
+    const strengthIndicator = document.getElementById('passwordStrength');
+
+    // Fig 2 & Fig 5: Dynamic User Input Handling & Password Strength Checker
+    passwordInput.addEventListener('input', () => {
+        const val = passwordInput.value;
+        let strength = "";
+        let color = "";
+
+        if (val.length === 0) {
+            strengthIndicator.textContent = "";
+            return;
+        }
+
+        // Basic strength algorithms
+        if (val.length > 8 && /[A-Z]/.test(val) && /[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val)) {
+            strength = "Strong";
+            color = "green";
+        } else if (val.length >= 6) {
+            strength = "Medium";
+            color = "orange";
+        } else {
+            strength = "Weak";
+            color = "red";
+        }
+
+        strengthIndicator.textContent = `Strength: ${strength}`;
+        strengthIndicator.style.color = color;
+    });
+
+    // 1. GET Request: Fetch items and display them
+    async function fetchInventory() {
+        try {
+            const response = await fetch(API_URL);
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                renderInventory(result.data);
+            } else {
+                inventoryContainer.innerHTML = `<p class="empty-state" style="color: red;">Error: ${result.message}</p>`;
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            inventoryContainer.innerHTML = '<p class="empty-state" style="color: red;">Could not connect to backend server.</p>';
+        }
+    }
+
+    function renderInventory(items) {
+        if (!items || items.length === 0) {
+            inventoryContainer.innerHTML = '<p class="empty-state">No items found in database table.</p>';
+            return;
+        }
+
+        inventoryContainer.innerHTML = ''; 
+        items.forEach(item => {
+            const itemRow = document.createElement('div');
+            itemRow.className = 'item-row';
+            itemRow.innerHTML = `
+                <div class="item-info">
+                    <h3>${escapeHtml(item.item_name)}</h3>
+                    <p>${escapeHtml(item.description)}</p>
+                    <div class="item-meta">ID: ${item.id} | User ID: ${item.user_id} | Added: ${item.created_at}</div>
+                </div>
+                <div>
+                    <button class="btn-delete" onclick="deleteItem(${item.id})">Delete</button>
+                </div>
+            `;
+            inventoryContainer.appendChild(itemRow);
+        });
+    }
+
+    // 2. POST Request: Add a new item
+    inventoryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const itemNameVal = document.getElementById('itemName').value;
+        const descriptionVal = document.getElementById('description').value;
+        const passwordVal = document.getElementById('adminPassword').value;
+
+        // Fig 1: JavaScript Form Validation (Beyond HTML5 'required' tag)
+        if (itemNameVal.trim().length < 2) {
+            alert("Validation Error: Item Name must be at least 2 characters long.");
+            return;
+        }
+
+        const payload = {
+            user_id: parseInt(document.getElementById('userId').value),
+            item_name: itemNameVal.trim(),
+            description: descriptionVal.trim(),
+            password: passwordVal // Passing dynamic input for backend to process
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                inventoryForm.reset();
+                strengthIndicator.textContent = ""; // Clear dynamic indicator
+                document.getElementById('userId').value = "1"; 
+                fetchInventory(); 
+            } else {
+                alert('Failed to insert item: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Post error:', error);
+            alert('Network connection error.');
+        }
+    });
+
+    // 3. DELETE Request: Remove an item by ID
+    async function deleteItem(id) {
+        if (!confirm(`Are you sure you want to delete item ID #${id}?`)) return;
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                fetchInventory(); 
+            } else {
+                alert('Deletion error: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Delete error:', error);
+            alert('Failed to complete delete request.');
+        }
+    }
+
+    // Secure HTML rendering helper against basic XSS scripts
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // Initial load
+    fetchInventory();
+</script>
+
+</body>
+</html>
