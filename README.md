@@ -8,9 +8,11 @@ Course Code: BIT3208
 Instructor: Lec. Nyoro Michael 
 
 Project Overview
+
 StockTrack is a dynamic, data driven inventory management platform designed to streamline tracking and warehouse operations. The system allows authorized users to securely add, view, update, and delete inventory records through a session managed dashboard. 
 
 Technology Stack
+
 Frontend Interface: HTML, CSS, JavaScript 
 Backend Server: PHP 
 Database Management: MySQL 
