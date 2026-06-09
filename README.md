@@ -19,6 +19,7 @@ UI/UX Prototyping: Figma, Canva
 Version Control: Git & GitHub 
 
 Weekly Development Logbook (Weeks 1-5)
+
 Week 1: Local Environment Setup:
 Configured the local server environment using XAMPP to run Apache and MySQL services successfully.
 Resolved port blocking issues to ensure smooth server execution.
